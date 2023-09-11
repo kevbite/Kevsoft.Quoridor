@@ -36,41 +36,12 @@ public static class QuoridorBoardBuilder
 
     private static void PlacePlayers(Square[][] squares, Players players)
     {
-        switch (players)
+        var playerCoordinate = BoardCoordinates.InitialPlayerCoordinates[players];
+
+        foreach (var (player, coordinates) in playerCoordinate)
         {
-            case Players.Two:
-            {
-                var player1Square = squares.GetSquare(new BoardCoordinates('e', 1));
-                player1Square.Pawn = new Pawn(Player.One);
-
-                var player2Square = squares.GetSquare(new BoardCoordinates('e', 9));
-                player2Square.Pawn = new Pawn(Player.Two);
-
-                break;
-            }
-            case Players.Four:
-            {
-                var player1Coordinates = new BoardCoordinates('e', 1);
-                var player2Coordinates = new BoardCoordinates('a', 5);
-                var player3Coordinates = new BoardCoordinates('e', 9);
-                var player4Coordinates = new BoardCoordinates('i', 5);
-
-                var player1Square = squares.GetSquare(player1Coordinates);
-                player1Square.Pawn = new Pawn(Player.One);
-
-                var player2Square = squares.GetSquare(player2Coordinates);
-                player2Square.Pawn = new Pawn(Player.Two);
-
-                var player3Square = squares.GetSquare(player3Coordinates);
-                player3Square.Pawn = new Pawn(Player.Three);
-
-                var player4Square = squares.GetSquare(player4Coordinates);
-                player4Square.Pawn = new Pawn(Player.Four);
-
-                break;
-            }
-            default:
-                throw new ArgumentOutOfRangeException(nameof(players), "Only two or four players are supported");
+            var player1Square = squares.GetSquare(coordinates);
+            player1Square.Pawn = new Pawn(player);
         }
     }
 }

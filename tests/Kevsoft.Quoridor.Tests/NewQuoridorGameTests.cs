@@ -79,14 +79,18 @@ public class NewQuoridorGameTests
         for (var y = 1; y <= 9; y++)
         {
             var leftSquare = game.Board.GetSquare(new BoardCoordinates('a', y));
-            leftSquare.NorthSquare.Should().Be(y is 9 ? null : game.Board.GetSquare(leftSquare.Coordinates.Move(Direction.North)));
-            leftSquare.SouthSquare.Should().Be(y is 1 ? null : game.Board.GetSquare(leftSquare.Coordinates.Move(Direction.South)));
+            leftSquare.NorthSquare.Should()
+                .Be(y is 9 ? null : game.Board.GetSquare(leftSquare.Coordinates.Move(Direction.North)));
+            leftSquare.SouthSquare.Should()
+                .Be(y is 1 ? null : game.Board.GetSquare(leftSquare.Coordinates.Move(Direction.South)));
             leftSquare.WestSquare.Should().BeNull();
             leftSquare.EastSquare.Should().BeSameAs(game.Board.GetSquare(leftSquare.Coordinates.Move(Direction.East)));
 
             var rightSquare = game.Board.GetSquare(new BoardCoordinates('i', y));
-            rightSquare.NorthSquare.Should().Be(y is 9 ? null : game.Board.GetSquare(rightSquare.Coordinates.Move(Direction.North)));
-            rightSquare.SouthSquare.Should().Be(y is 1 ? null : game.Board.GetSquare(rightSquare.Coordinates.Move(Direction.South)));
+            rightSquare.NorthSquare.Should()
+                .Be(y is 9 ? null : game.Board.GetSquare(rightSquare.Coordinates.Move(Direction.North)));
+            rightSquare.SouthSquare.Should()
+                .Be(y is 1 ? null : game.Board.GetSquare(rightSquare.Coordinates.Move(Direction.South)));
             rightSquare.EastSquare.Should().BeNull();
             rightSquare.WestSquare.Should()
                 .BeSameAs(game.Board.GetSquare(rightSquare.Coordinates.Move(Direction.West)));
@@ -113,5 +117,16 @@ public class NewQuoridorGameTests
                 square.WestSquare.Should().BeSameAs(game.Board.GetSquare(boardCoordinates.Move(Direction.West)));
             }
         }
+    }
+
+    [Theory]
+    [InlineData(Players.Two)]
+    [InlineData(Players.Four)]
+    public void WhenCreatingANewQuoridorGame_ShouldWinnerBeNullAndFinishedBeFalse(Players players)
+    {
+        var game = QuoridorGame.New(players);
+
+        game.Finished.Should().BeFalse();
+        game.Winner.Should().BeNull();
     }
 }

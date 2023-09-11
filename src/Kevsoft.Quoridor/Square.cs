@@ -8,9 +8,11 @@ public class Square
     }
 
     public BoardCoordinates Coordinates { get; }
-    public Pawn? Pawn { get; set; }
-    public Square? NorthSquare { get; set; }
-    public Square? SouthSquare { get; set; }
-    public Square? EastSquare { get; set; }
-    public Square? WestSquare { get; set; }
+
+    public Pawn? Pawn { get; internal set; }
+    public Square? NorthSquare { get; internal set; }
+    public Square? SouthSquare { get; internal set; }
+    public Square? EastSquare { get; internal set; }
+    public Square? WestSquare { get; internal set; }
+    
 }
