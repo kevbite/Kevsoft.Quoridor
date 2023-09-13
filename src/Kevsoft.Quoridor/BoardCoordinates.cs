@@ -3,7 +3,7 @@ namespace Kevsoft.Quoridor;
 /// <summary>
 /// Board coordinates in algebraic notation
 /// </summary>
-public readonly struct BoardCoordinates
+public readonly record struct BoardCoordinates
 {
     public const char MinLetter = 'a';
     public const char MaxLetter = 'i';
@@ -77,15 +77,37 @@ public readonly struct BoardCoordinates
         }
     }
 
-    public BoardCoordinates Move(Direction direction) =>
-        direction switch
+    public bool TryAdd(Direction direction, out BoardCoordinates boardCoordinates)
+    {
+        switch (direction)
         {
-            Direction.North => new BoardCoordinates(Letter, Number + MinNumber),
-            Direction.South => new BoardCoordinates(Letter, Number - MinNumber),
-            Direction.East => new BoardCoordinates((char)(Letter + MinNumber), Number),
-            Direction.West => new BoardCoordinates((char)(Letter - MinNumber), Number),
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, "Invalid direction to move")
-        };
+                case Direction.North when Number + 1 <= MaxNumber:
+                    boardCoordinates = new BoardCoordinates(Letter, Number + 1);
+                    return true;
+                case Direction.South when Number - 1 >= MinNumber:
+                    boardCoordinates = new BoardCoordinates(Letter, Number - 1);
+                    return true;
+                case Direction.East when Letter + 1 <= MaxLetter:
+                    boardCoordinates = new BoardCoordinates((char)(Letter + 1), Number);
+                    return true;
+                case Direction.West when Letter - 1 >= MinLetter:
+                    boardCoordinates = new BoardCoordinates((char)(Letter - 1), Number);
+                    return true;
+                default:
+                    boardCoordinates = default;
+                    return false;
+        }
+
+        ;
+    }
+
+    public BoardCoordinates Add(Direction direction)
+    {
+        if(TryAdd(direction, out var boardCoordinates))
+            return boardCoordinates;
+        
+        throw new InvalidOperationException("Cannot add direction");
+    }
 
     /// <summary></summary>
     public char Letter { get; }

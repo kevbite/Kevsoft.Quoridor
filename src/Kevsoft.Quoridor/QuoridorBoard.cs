@@ -1,9 +1,13 @@
 namespace Kevsoft.Quoridor;
 
-public record QuoridorBoard(Players Players)
+public class QuoridorBoard
 {
-    private readonly Square[][] _squares = QuoridorBoardBuilder.BuildSquares(Players);
-    public Players Players { get; } = Players;
+    private readonly Square[][] _squares;
+
+    public QuoridorBoard(Square[][] squares)
+    {
+        _squares = squares;
+    }
 
     public Square GetSquare(BoardCoordinates coordinates)
         => _squares.GetSquare(coordinates);
@@ -12,16 +16,34 @@ public record QuoridorBoard(Players Players)
         => _squares.SelectMany(x => x)
             .First(x => x.Pawn?.Player == player);
 
-    internal void MovePlayer(MovePawn move)
+    internal bool MovePlayer(MovePawn move)
     {
         var findPlayer = FindPlayer(move.Player);
-        var newSquare = GetSquare(move.Coordinates);
 
-        if (newSquare is { Pawn: not null })
-            throw new InvalidOperationException("Cannot move to a square that is already occupied");
-        
-        var pawn = findPlayer.Pawn;
+        switch (findPlayer)
+        {   
+            case { Pawn: null }:
+                throw new InvalidOperationException("Cannot move to a square that is already occupied");
+            
+            case { Pawn: var pawn, NorthSquare: var northSquare } when move.Coordinates == northSquare?.Coordinates:
+                northSquare.Pawn = pawn;
+                break;
+            
+            case { Pawn: var pawn, SouthSquare: var southSquare } when move.Coordinates == southSquare?.Coordinates:
+                southSquare.Pawn = pawn;
+                break;
+
+            case { Pawn: var pawn, EastSquare: var eastSquare } when move.Coordinates == eastSquare?.Coordinates:
+                eastSquare.Pawn = pawn;
+                break;
+            case { Pawn: var pawn, WestSquare: var westSquare } when move.Coordinates == westSquare?.Coordinates:
+                westSquare.Pawn = pawn;
+                break;
+            default:
+                return false;
+        }
         findPlayer.Pawn = null;
-        newSquare.Pawn = pawn;
+        return true;
     }
+
 }

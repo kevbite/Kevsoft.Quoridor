@@ -2,22 +2,24 @@ namespace Kevsoft.Quoridor;
 
 public class QuoridorGame
 {
+    private readonly Players _players;
     public QuoridorBoard Board { get; }
 
     public Player NextPlayer { get; private set; }
 
-    private QuoridorGame(QuoridorBoard board)
+    public QuoridorGame(Players players, QuoridorBoard board)
     {
+        _players = players;
         Board = board;
         NextPlayer = Player.One;
     }
 
     public static QuoridorGame New(Players players)
-        => new(new QuoridorBoard(players));
+        => new(players, new QuoridorBoard(QuoridorBoardBuilder.BuildSquares(players)));
 
     private void ChangePlayer()
     {
-        NextPlayer = Board.Players switch
+        NextPlayer = _players switch
         {
             Players.Two => NextPlayer switch
             {
@@ -55,8 +57,10 @@ public class QuoridorGame
 
     private PlayResult MovePawn(MovePawn move)
     {
-        Board.MovePlayer(move);
-        return new SuccessPlayResult();
+        if(Board.MovePlayer(move))
+            return new SuccessPlayResult();
+
+        return new InvalidPlayerMove();
     }
 
     public bool Finished => Winner is not null;
@@ -65,9 +69,9 @@ public class QuoridorGame
     {
         get
         {
-            var playerCoordinate = BoardCoordinates.InitialPlayerCoordinates[Board.Players];
+            var playerCoordinate = BoardCoordinates.InitialPlayerCoordinates[_players];
 
-            foreach (var (player, startingCoordinates) in playerCoordinate)
+            foreach (var (player, _) in playerCoordinate)
             {
                 var playerSquare = Board.FindPlayer(player);
                 switch (player)

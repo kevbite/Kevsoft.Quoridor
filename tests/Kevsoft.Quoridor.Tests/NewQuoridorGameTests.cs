@@ -59,41 +59,41 @@ public class NewQuoridorGameTests
         {
             var bottomSquare = game.Board.GetSquare(new BoardCoordinates(x, 1));
             bottomSquare.NorthSquare.Should()
-                .BeSameAs(game.Board.GetSquare(bottomSquare.Coordinates.Move(Direction.North)));
+                .BeSameAs(game.Board.GetSquare(bottomSquare.Coordinates.Add(Direction.North)));
             bottomSquare.SouthSquare.Should().BeNull();
             bottomSquare.EastSquare.Should()
-                .Be(x is 'i' ? null : game.Board.GetSquare(bottomSquare.Coordinates.Move(Direction.East)));
+                .Be(x is 'i' ? null : game.Board.GetSquare(bottomSquare.Coordinates.Add(Direction.East)));
             bottomSquare.WestSquare.Should()
-                .Be(x is 'a' ? null : game.Board.GetSquare(bottomSquare.Coordinates.Move(Direction.West)));
+                .Be(x is 'a' ? null : game.Board.GetSquare(bottomSquare.Coordinates.Add(Direction.West)));
 
             var topSquare = game.Board.GetSquare(new BoardCoordinates(x, 9));
             topSquare.NorthSquare.Should().BeNull();
             topSquare.SouthSquare.Should()
-                .BeSameAs(game.Board.GetSquare(topSquare.Coordinates.Move(Direction.South)));
+                .BeSameAs(game.Board.GetSquare(topSquare.Coordinates.Add(Direction.South)));
             topSquare.EastSquare.Should()
-                .Be(x is 'i' ? null : game.Board.GetSquare(topSquare.Coordinates.Move(Direction.East)));
+                .Be(x is 'i' ? null : game.Board.GetSquare(topSquare.Coordinates.Add(Direction.East)));
             topSquare.WestSquare.Should()
-                .Be(x is 'a' ? null : game.Board.GetSquare(topSquare.Coordinates.Move(Direction.West)));
+                .Be(x is 'a' ? null : game.Board.GetSquare(topSquare.Coordinates.Add(Direction.West)));
         }
 
         for (var y = 1; y <= 9; y++)
         {
             var leftSquare = game.Board.GetSquare(new BoardCoordinates('a', y));
             leftSquare.NorthSquare.Should()
-                .Be(y is 9 ? null : game.Board.GetSquare(leftSquare.Coordinates.Move(Direction.North)));
+                .Be(y is 9 ? null : game.Board.GetSquare(leftSquare.Coordinates.Add(Direction.North)));
             leftSquare.SouthSquare.Should()
-                .Be(y is 1 ? null : game.Board.GetSquare(leftSquare.Coordinates.Move(Direction.South)));
+                .Be(y is 1 ? null : game.Board.GetSquare(leftSquare.Coordinates.Add(Direction.South)));
             leftSquare.WestSquare.Should().BeNull();
-            leftSquare.EastSquare.Should().BeSameAs(game.Board.GetSquare(leftSquare.Coordinates.Move(Direction.East)));
+            leftSquare.EastSquare.Should().BeSameAs(game.Board.GetSquare(leftSquare.Coordinates.Add(Direction.East)));
 
             var rightSquare = game.Board.GetSquare(new BoardCoordinates('i', y));
             rightSquare.NorthSquare.Should()
-                .Be(y is 9 ? null : game.Board.GetSquare(rightSquare.Coordinates.Move(Direction.North)));
+                .Be(y is 9 ? null : game.Board.GetSquare(rightSquare.Coordinates.Add(Direction.North)));
             rightSquare.SouthSquare.Should()
-                .Be(y is 1 ? null : game.Board.GetSquare(rightSquare.Coordinates.Move(Direction.South)));
+                .Be(y is 1 ? null : game.Board.GetSquare(rightSquare.Coordinates.Add(Direction.South)));
             rightSquare.EastSquare.Should().BeNull();
             rightSquare.WestSquare.Should()
-                .BeSameAs(game.Board.GetSquare(rightSquare.Coordinates.Move(Direction.West)));
+                .BeSameAs(game.Board.GetSquare(rightSquare.Coordinates.Add(Direction.West)));
         }
     }
 
@@ -110,11 +110,11 @@ public class NewQuoridorGameTests
             {
                 var boardCoordinates = new BoardCoordinates(x, y);
                 var square = game.Board.GetSquare(boardCoordinates);
-                var expected = game.Board.GetSquare(boardCoordinates.Move(Direction.North));
+                var expected = game.Board.GetSquare(boardCoordinates.Add(Direction.North));
                 square.NorthSquare.Should().BeSameAs(expected);
-                square.SouthSquare.Should().BeSameAs(game.Board.GetSquare(boardCoordinates.Move(Direction.South)));
-                square.EastSquare.Should().BeSameAs(game.Board.GetSquare(boardCoordinates.Move(Direction.East)));
-                square.WestSquare.Should().BeSameAs(game.Board.GetSquare(boardCoordinates.Move(Direction.West)));
+                square.SouthSquare.Should().BeSameAs(game.Board.GetSquare(boardCoordinates.Add(Direction.South)));
+                square.EastSquare.Should().BeSameAs(game.Board.GetSquare(boardCoordinates.Add(Direction.East)));
+                square.WestSquare.Should().BeSameAs(game.Board.GetSquare(boardCoordinates.Add(Direction.West)));
             }
         }
     }
