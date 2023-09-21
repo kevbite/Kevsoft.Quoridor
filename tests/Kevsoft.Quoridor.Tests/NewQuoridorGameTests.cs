@@ -10,10 +10,10 @@ public class NewQuoridorGameTests
         var game = QuoridorGame.New(Players.Two);
 
         var initialPlayer1Square = game.Board.GetSquare(new BoardCoordinates('e', 1));
-        initialPlayer1Square.Pawn.Should().Be(new Pawn(Player.One));
+        initialPlayer1Square.Pawn!.Player.Should().Be(Player.One);
 
         var initialPlayer2Square = game.Board.GetSquare(new BoardCoordinates('e', 9));
-        initialPlayer2Square.Pawn.Should().Be(new Pawn(Player.Two));
+        initialPlayer2Square.Pawn!.Player.Should().Be(Player.Two);
     }
 
     [Fact]
@@ -22,16 +22,16 @@ public class NewQuoridorGameTests
         var game = QuoridorGame.New(Players.Four);
 
         var initialPlayer1Square = game.Board.GetSquare(new BoardCoordinates('e', 1));
-        initialPlayer1Square.Pawn.Should().Be(new Pawn(Player.One));
+        initialPlayer1Square.Pawn!.Player.Should().Be(Player.One);
 
         var initialPlayer2Square = game.Board.GetSquare(new BoardCoordinates('a', 5));
-        initialPlayer2Square.Pawn.Should().Be(new Pawn(Player.Two));
+        initialPlayer2Square.Pawn!.Player.Should().Be(Player.Two);
 
         var initialPlayer3Square = game.Board.GetSquare(new BoardCoordinates('e', 9));
-        initialPlayer3Square.Pawn.Should().Be(new Pawn(Player.Three));
+        initialPlayer3Square.Pawn!.Player.Should().Be(Player.Three);
 
         var initialPlayer4Square = game.Board.GetSquare(new BoardCoordinates('i', 5));
-        initialPlayer4Square.Pawn.Should().Be(new Pawn(Player.Four));
+        initialPlayer4Square.Pawn!.Player.Should().Be(Player.Four);
     }
 
     [Theory]

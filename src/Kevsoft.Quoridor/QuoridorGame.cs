@@ -15,7 +15,10 @@ public class QuoridorGame
     }
 
     public static QuoridorGame New(Players players)
-        => new(players, new QuoridorBoard(QuoridorBoardBuilder.BuildSquares(players)));
+    {
+        var (squares, pawns) = SquaresBuilder.BuildSquares(players);
+        return new(players, new QuoridorBoard(squares, pawns));
+    }
 
     private void ChangePlayer()
     {
@@ -41,15 +44,16 @@ public class QuoridorGame
     public PlayResult Play(Move move)
     {
         if (move.Player != NextPlayer)
-            return new InvalidPlayer();
+            return new FailurePlayResult(Failure.InvalidPlayer);
 
-        var result =  move switch
+        var result = move switch
         {
             MovePawn m => MovePawn(m),
+            AddWall m => AddWall(m),
             _ => throw new InvalidOperationException()
         };
-        
-        if(result.Success)
+
+        if (result.Success)
             ChangePlayer();
 
         return result;
@@ -57,10 +61,18 @@ public class QuoridorGame
 
     private PlayResult MovePawn(MovePawn move)
     {
-        if(Board.MovePlayer(move))
+        if (Board.MovePlayer(move))
             return new SuccessPlayResult();
 
-        return new InvalidPlayerMove();
+        return new FailurePlayResult(Failure.InvalidMove);
+    }
+
+    private PlayResult AddWall(AddWall addWall)
+    {
+        if (Board.AddWall(addWall))
+            return new SuccessPlayResult();
+
+        return new FailurePlayResult(Failure.InvalidMove);
     }
 
     public bool Finished => Winner is not null;
@@ -73,7 +85,7 @@ public class QuoridorGame
 
             foreach (var (player, _) in playerCoordinate)
             {
-                var playerSquare = Board.FindPlayer(player);
+                var playerSquare = Board.Pawns[player].Square;
                 switch (player)
                 {
                     case Player.One when playerSquare.Coordinates.Number == BoardCoordinates.MaxNumber:
@@ -86,11 +98,42 @@ public class QuoridorGame
             return null;
         }
     }
+
+    public IEnumerable<Square> GetPlayerSquares()
+    {
+        return Board.Pawns.Values.Select(x => x.Square);
+    }
+
+    public IEnumerable<Wall> GetWalledSquares()
+    {
+        return BoardCoordinates.All.Select(x => Board.GetSquare(x))
+                .Where(x => x is { NorthSquare: null } or { EastSquare: null })
+                .SelectMany(x =>
+                {
+                    var walls = new List<Wall>();
+                    if (x is { NorthSquare: null, Coordinates.Number: not BoardCoordinates.MaxNumber })
+                        walls.Add(new(x.Coordinates, WallDirection.Horizontal));
+                    if (x is { EastSquare: null, Coordinates.Letter: not BoardCoordinates.MaxLetter })
+                        walls.Add(new(x.Coordinates, WallDirection.Vertical));
+                    return walls;
+                })
+            ;
+    }
 }
+
+public record Wall(BoardCoordinates Coordinates, WallDirection Direction);
 
 public record Move(Player Player);
 
 public record MovePawn(Player Player, BoardCoordinates Coordinates) : Move(Player);
+
+public record AddWall(Player Player, BoardCoordinates Coordinates, WallDirection WallDirection) : Move(Player);
+
+public enum WallDirection
+{
+    Horizontal,
+    Vertical
+}
 
 public class PlayResult
 {
@@ -109,16 +152,18 @@ public class SuccessPlayResult : PlayResult
     }
 }
 
-public class InvalidPlayerMove : PlayResult
+public class FailurePlayResult : PlayResult
 {
-    public InvalidPlayerMove() : base(false)
+    public FailurePlayResult(Failure failure) : base(false)
     {
+        Failure = failure;
     }
-};
 
-public class InvalidPlayer : PlayResult
+    public Failure Failure { get; }
+}
+
+public enum Failure
 {
-    public InvalidPlayer() : base(false)
-    {
-    }
-};
+    InvalidPlayer,
+    InvalidMove
+}

@@ -84,8 +84,9 @@ public class PawnQuoridorGameTests
 
         result.Should().BeEquivalentTo(new
         {
-            Success = false
-        }).And.BeOfType<InvalidPlayer>();
+            Success = false,
+            Failure = Failure.InvalidPlayer
+        });
     }
 
     [Fact]

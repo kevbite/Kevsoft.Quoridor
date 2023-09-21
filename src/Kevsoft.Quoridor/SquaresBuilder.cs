@@ -1,8 +1,8 @@
 ﻿namespace Kevsoft.Quoridor;
 
-public static class QuoridorBoardBuilder
+public static class SquaresBuilder
 {
-    public static Square[][] BuildSquares(Players players)
+    public static (Square[][] squares, IReadOnlyDictionary<Player, Pawn> pawns) BuildSquares(Players players)
     {
         static void LinkSquares(Square[][] squares)
         {
@@ -29,19 +29,19 @@ public static class QuoridorBoardBuilder
 
         LinkSquares(squares);
 
-        PlacePlayers(squares, players);
+        var pawns = PlacePlayers(squares, players);
 
-        return squares;
+        return (squares, pawns);
     }
 
-    private static void PlacePlayers(Square[][] squares, Players players)
+    private static IReadOnlyDictionary<Player, Pawn> PlacePlayers(Square[][] squares, Players players)
     {
-        var playerCoordinate = BoardCoordinates.InitialPlayerCoordinates[players];
-
-        foreach (var (player, coordinates) in playerCoordinate)
-        {
-            var player1Square = squares.GetSquare(coordinates);
-            player1Square.Pawn = new Pawn(player);
-        }
+        return BoardCoordinates.InitialPlayerCoordinates[players]
+            .Select(x =>
+            {
+                var playerSquare = squares.GetSquare(x.Value);
+                return new Pawn(x.Key, playerSquare);
+            })
+            .ToDictionary(x => x.Player, x => x);
     }
 }

@@ -3,10 +3,13 @@ namespace Kevsoft.Quoridor;
 public class QuoridorBoard
 {
     private readonly Square[][] _squares;
+    private readonly IReadOnlyDictionary<Player, Pawn> _pawns;
 
-    public QuoridorBoard(Square[][] squares)
+    public IReadOnlyDictionary<Player, Pawn> Pawns => _pawns;
+    public QuoridorBoard(Square[][] squares, IReadOnlyDictionary<Player, Pawn> pawns)
     {
         _squares = squares;
+        _pawns = pawns;
     }
 
     public Square GetSquare(BoardCoordinates coordinates)
@@ -18,32 +21,35 @@ public class QuoridorBoard
 
     internal bool MovePlayer(MovePawn move)
     {
-        var findPlayer = FindPlayer(move.Player);
-
-        switch (findPlayer)
-        {   
-            case { Pawn: null }:
-                throw new InvalidOperationException("Cannot move to a square that is already occupied");
-            
-            case { Pawn: var pawn, NorthSquare: var northSquare } when move.Coordinates == northSquare?.Coordinates:
-                northSquare.Pawn = pawn;
-                break;
-            
-            case { Pawn: var pawn, SouthSquare: var southSquare } when move.Coordinates == southSquare?.Coordinates:
-                southSquare.Pawn = pawn;
-                break;
-
-            case { Pawn: var pawn, EastSquare: var eastSquare } when move.Coordinates == eastSquare?.Coordinates:
-                eastSquare.Pawn = pawn;
-                break;
-            case { Pawn: var pawn, WestSquare: var westSquare } when move.Coordinates == westSquare?.Coordinates:
-                westSquare.Pawn = pawn;
-                break;
-            default:
-                return false;
-        }
-        findPlayer.Pawn = null;
-        return true;
+        return _pawns[move.Player].Move(move.Coordinates);
     }
 
+    public bool AddWall(AddWall addWall)
+    {
+        var square = GetSquare(addWall.Coordinates);
+
+        switch (addWall.WallDirection)
+        {
+            case WallDirection.Horizontal:
+            {
+                square.NorthSquare.SouthSquare = null;
+                square.EastSquare.NorthSquare.SouthSquare = null;
+                square.EastSquare.NorthSquare = null;
+                square.NorthSquare = null;
+                break;
+            }
+            case WallDirection.Vertical:
+            {
+                square.EastSquare.WestSquare = null;
+                square.NorthSquare.EastSquare.WestSquare = null;
+                square.NorthSquare.EastSquare = null;
+                square.EastSquare = null;
+                break;
+            }
+            default:
+                throw new InvalidOperationException();
+        }
+
+        return true;
+    }
 }
