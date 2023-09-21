@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kevsoft.Quoridor", "src\Kev
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kevsoft.Quoridor.Tests", "tests\Kevsoft.Quoridor.Tests\Kevsoft.Quoridor.Tests.csproj", "{A0E46144-6C56-4A9B-8515-4F237C00EF43}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kevsoft.Quoridor.BlazorApp", "src\Kevsoft.Quoridor.BlazorApp\Kevsoft.Quoridor.BlazorApp.csproj", "{169F34CB-4182-4F58-9C50-E055DB5BA47B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{A0E46144-6C56-4A9B-8515-4F237C00EF43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0E46144-6C56-4A9B-8515-4F237C00EF43}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0E46144-6C56-4A9B-8515-4F237C00EF43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{169F34CB-4182-4F58-9C50-E055DB5BA47B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{169F34CB-4182-4F58-9C50-E055DB5BA47B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{169F34CB-4182-4F58-9C50-E055DB5BA47B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{169F34CB-4182-4F58-9C50-E055DB5BA47B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

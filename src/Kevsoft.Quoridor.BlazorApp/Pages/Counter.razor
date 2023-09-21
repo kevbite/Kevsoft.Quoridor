@@ -1,0 +1,127 @@
+﻿@page "/counter"
+@inject IJSRuntime Js
+
+<style>
+    canvas {
+      width: 600px;
+      height: 600px;
+    }
+  </style>
+
+<PageTitle>Quoridor.NET</PageTitle>
+
+<h1>Quoridor.NET</h1>
+
+<div class="d-flex flex-column">
+    <canvas id="gridCanvas" onclick="" width="600px" height="600px"></canvas>
+    @if (_game.Finished)
+    {
+        <span>Winner: @_game.Winner.ToString()</span>
+    }
+    else
+    {
+        <span>Next Player: @_game.NextPlayer.ToString()</span>
+    }
+</div>
+
+
+@code {
+    private readonly QuoridorGame _game = QuoridorGame.New(Players.Four);
+
+    private async Task GameStateChanged()
+    {
+        var players = _game.GetPlayerSquares().Select(square =>
+        {
+            var (x, y) = square.Coordinates.ToGridCoordinates();
+            return new { square.Pawn!.Player, x, y };
+        });
+
+        var walls = _game.GetWalledSquares().Select(wall =>
+        {
+            var (x, y) = wall.Coordinates.ToGridCoordinates();
+            return new { direction = wall.Direction.ToString(), x, y };
+        });
+
+        await Js.InvokeAsync<string>("onGameStateChanged", new
+        {
+            players,
+            walls
+        });
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        CellClicked += async (sender, coordinates) =>
+        {
+            var playResult = _game.Play(new MovePawn(_game.NextPlayer, coordinates));
+            if (playResult.Success)
+            {
+                await GameStateChanged();
+            }
+        };
+        WallClicked += async (sender, eventArgs) =>
+        {
+            var playResult = _game.Play(new AddWall(_game.NextPlayer, eventArgs.Coordinates, eventArgs.Position));
+            
+            if (playResult.Success)
+            {
+                await GameStateChanged();
+            }
+        };
+
+        await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Counter.razor.js");
+
+        await base.OnAfterRenderAsync(firstRender);
+        await GameStateChanged();
+    }
+
+    public static event EventHandler<BoardCoordinates>? CellClicked;
+    public static event EventHandler<WallClickedEventArgs>? WallClicked;
+
+    public class WallClickedEventArgs : EventArgs
+    {
+        public WallDirection Position { get; set; }
+        public BoardCoordinates Coordinates { get; set; }
+    }
+
+    public class GridCoordinates
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+    }
+
+    [JSInvokable]
+    public static Task JsCellClicked(GridCoordinates position)
+    {
+        var fromGridCoordinates = BoardCoordinates.FromGridCoordinates(position.X, position.Y);
+        CellClicked?.Invoke(null, fromGridCoordinates);
+
+        return Task.CompletedTask;
+    }
+
+
+    public class Wall
+    {
+        public string Position { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }    }
+
+    [JSInvokable]
+    public static Task JsWallClicked(Wall wall)
+    {
+        var boardCoordinates = BoardCoordinates.FromGridCoordinates(wall.X, wall.Y);
+        WallClicked?.Invoke(null, new WallClickedEventArgs
+        {
+            Position = wall.Position == "horizontal" ? WallDirection.Horizontal : WallDirection.Vertical,
+            Coordinates = boardCoordinates
+        });
+
+        return Task.CompletedTask;
+    }
+
+
+}
