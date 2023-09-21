@@ -1,4 +1,4 @@
-﻿@page "/counter"
+﻿@page "/quoridor"
 @inject IJSRuntime Js
 
 <style>
@@ -73,7 +73,7 @@
             }
         };
 
-        await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Counter.razor.js");
+        await Js.InvokeAsync<IJSObjectReference>("import", "./Pages/Quoridor.razor.js");
 
         await base.OnAfterRenderAsync(firstRender);
         await GameStateChanged();
